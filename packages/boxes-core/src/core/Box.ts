@@ -1,5 +1,6 @@
 import { Patch } from "immer"
 import createTrackableData from "../utils/createTrackableData"
+import { isMap } from "../utils/type"
 import {
   AnyFn,
   AnyObj,
@@ -45,7 +46,11 @@ class Box<T> {
     defaultTarget: WrappedDataRef<T>
   ) => {
     return (
-      path?.reduce((acc: any, prop) => acc?.[prop], target) ?? defaultTarget
+      // fix ES6 Map.prototype.get
+      path?.reduce(
+        (acc: any, prop) => (isMap(acc) ? acc?.get(prop) : acc?.[prop]),
+        target
+      ) ?? defaultTarget
     )
   }
 
